@@ -123,7 +123,7 @@ console.log('Found user:', user);
     console.error(error);
     return res.status(500).json({ message: "Server error" });
   }
-});
+});  
 
 
 
