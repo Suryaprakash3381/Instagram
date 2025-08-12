@@ -44,7 +44,7 @@ function Slider() {
 
       <div className='flex flex-col h-1/4 ml-8'>
         <h1 className='text-2xl font-semibold mb-6'>
-          <a href="#" onClick={handleLogout}>
+          <a href="" onClick={handleLogout}>
             <i className="fas fa-right-from-bracket text-red-600 text-xl"></i> Logout
           </a>
         </h1>

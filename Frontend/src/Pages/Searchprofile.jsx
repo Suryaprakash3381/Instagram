@@ -149,7 +149,7 @@ function UserProfile() {
                 <img
                   src={`http://localhost:3000${post.imageUrl}`}
                   alt={`Post ${post._id}`}
-                  className="w-full h-64 object-cover rounded-lg border border-gray-500 transition duration-300 group-hover:blur-sm"
+                  className="w-full h-64 object-cover rounded-lg border border-gray-500 transition duration-300 "
                 />
                 {/* Only show delete button if it's the current user's profile */}
                 {profile.isCurrentUser && (
