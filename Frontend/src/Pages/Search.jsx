@@ -14,7 +14,7 @@ function Search() {
       setUser(null);
 
       const res = await axios.post(
-        'http://localhost:3000/api/v1/auth/search-user',
+        `${import.meta.env.VITE_API_URL}/api/v1/auth/search-user`,
         { username },
         { withCredentials: true }
       );
@@ -67,7 +67,7 @@ function Search() {
             <p>Email: {user.email}</p>
             {user.profilePicture && (
               <img
-                src={`http://localhost:3000${user.profilePicture}`}
+                src={`${import.meta.env.VITE_API_URL}${user.profilePicture}`}
                 alt='Profile'
                 className='w-24 h-24 rounded-full mt-2'
               />

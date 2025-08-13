@@ -9,7 +9,7 @@ function Slider() {
   const handleLogout = async (e) => {
     e.preventDefault();
     try {
-      await axios.post('http://localhost:3000/api/v1/auth/logout', {}, {
+      await axios.post(`${import.meta.env.VITE_API_URL}/api/v1/auth/logout`, {}, {
         withCredentials: true
       });
       toast.success('Logged out successfully');

@@ -28,7 +28,7 @@ function AddPost() {
 
     try {
       setLoading(true);
-      const res =await fetch('http://localhost:3000/api/v1/post/create-post', {
+      const res =await fetch(`${import.meta.env.VITE_API_URL}/api/v1/post/create-post`, {
        method: 'POST',
        body: formData,
       credentials: 'include' // 👈 VERY IMPORTANT: sends the cookie

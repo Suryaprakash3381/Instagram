@@ -14,7 +14,7 @@ function UserProfile() {
   useEffect(() => {
     const fetchUserProfile = async () => {
       try {
-        const res = await fetch(`http://localhost:3000/api/v1/auth/user-profile/${userId}`, {
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/auth/user-profile/${userId}`, {
           method: "GET",
           credentials: "include",
         });
@@ -48,7 +48,7 @@ function UserProfile() {
     if (!window.confirm('Are you sure you want to delete this post?')) return;
 
     try {
-      const res = await fetch(`http://localhost:3000/api/v1/post/delete-post/${postId}`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/post/delete-post/${postId}`, {
         method: "DELETE",
         credentials: "include",
         headers: {
@@ -143,7 +143,7 @@ function UserProfile() {
             {posts.map((post) => (
               <div key={post._id} className="relative group w-full h-64">
                 <img
-                  src={`http://localhost:3000${post.imageUrl}`}
+                  src={`${import.meta.env.VITE_API_URL}${post.imageUrl}`}
                   alt={`Post ${post._id}`}
                   className="w-full h-64 object-cover rounded-lg border border-gray-500 transition duration-300 "
                 />
