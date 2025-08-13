@@ -12,7 +12,7 @@ dotenv.config();
 
 const app = express();
 
-const PORT = process.env.PORT || 3000;
+const PORT = 3000;
 
 // Middleware
 app.use(cors({
@@ -33,8 +33,8 @@ mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/instagram',
     useUnifiedTopology: true,
     useNewUrlParser: true,
 })
-    .then(() => console.log('✅ MongoDB connected'))
-    .catch((err) => console.error('❌ MongoDB connection error:', err));
+    .then(() => console.log('MongoDB connected'))
+    .catch((err) => console.error('MongoDB connection error:', err));
 
 // Default Route
 app.get('/', (req, res) => {

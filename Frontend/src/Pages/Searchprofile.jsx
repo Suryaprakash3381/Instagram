@@ -110,11 +110,7 @@ function UserProfile() {
               >
                 Follow
               </button>
-              <div className='block md:hidden'>
-                <h1 className='text-2xl font-semibold mb-6'>
-                  <a href="#"><i className="fas fa-right-from-bracket text-red-600 text-xl"></i> Logout</a>
-                </h1>
-              </div>
+              
             </div>
           </div>
         </div>
