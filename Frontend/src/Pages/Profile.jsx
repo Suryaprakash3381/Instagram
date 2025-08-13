@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 import Slider from '../component/Slider.jsx';
 import Alternate from '../component/Alternate.jsx';
@@ -6,7 +7,7 @@ import '../App.css';
 
 function Profile() {
   const [profile, setProfile] = useState(null);
-  const [posts, setPosts] = useState([]); // Changed from images to posts
+  const [posts, setPosts] = useState([]);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -21,16 +22,35 @@ function Profile() {
       .then((data) => {
         console.log('Profile data received:', data);
         setProfile(data);
-        setPosts(data.posts || []); // Now expecting posts array with _id and imageUrl
+        setPosts(data.posts || []);
       })
       .catch((err) => {
         console.error('Error fetching profile:', err);
+        toast.error('Could not load profile');
       });
   }, []);
 
   const handleEditProfile = () => {
-    navigate('/update'); // Redirect to update profile page
-    // Future logic
+    navigate('/update');
+  };
+
+  const handleLogout = () => {
+    fetch("http://localhost:3000/api/v1/auth/logout", {
+      method: "POST",
+      credentials: "include",
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error('Logout failed');
+        return res.json();
+      })
+      .then(() => {
+        toast.success('Logged out successfully');
+        navigate('/login');
+      })
+      .catch((err) => {
+        console.error('Logout error:', err);
+        toast.error('Logout failed. Please try again.');
+      });
   };
 
   const handleDelete = async (postId) => {
@@ -40,23 +60,22 @@ function Profile() {
       const res = await fetch(`http://localhost:3000/api/v1/post/delete-post/${postId}`, {
         method: "DELETE",
         credentials: "include",
-         headers: {
-        "Content-Type": "application/json",
-      },
+        headers: {
+          "Content-Type": "application/json",
+        },
       });
 
       const data = await res.json();
-      
+
       if (!res.ok) {
         throw new Error(data.message || "Failed to delete post");
       }
 
-      // Update the UI by removing the deleted post
       setPosts(prev => prev.filter(post => post._id !== postId));
-      alert('Post deleted successfully!');
+      toast.success('Post deleted successfully!');
     } catch (err) {
       console.error("Delete error:", err);
-      alert(`Delete failed: ${err.message}`);
+      toast.error(`Delete failed: ${err.message}`);
     }
   };
 
@@ -88,8 +107,6 @@ function Profile() {
               <button
                 className='px-4 py-2 bg-blue-600 rounded hover:bg-blue-700 transition'
                 onClick={handleEditProfile}
-                
-                
               >
                 Edit Profile
               </button>
@@ -101,7 +118,9 @@ function Profile() {
               </button>
               <div className='block md:hidden'>
                 <h1 className='text-2xl font-semibold mb-6'>
-                  <a href="#"><i className="fas fa-right-from-bracket text-red-600 text-xl"></i> Logout</a>
+                  <a href="/login" onClick={(e) => { e.preventDefault(); handleLogout(); }}>
+                    <i className="fas fa-right-from-bracket text-red-600 text-xl"></i> Logout
+                  </a>
                 </h1>
               </div>
             </div>

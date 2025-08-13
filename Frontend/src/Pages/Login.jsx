@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from 'react-router-dom';
-
+import { toast } from 'react-toastify';
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -12,6 +12,7 @@ export default function Login() {
 
     if (!email || !password) {
       setError("Please fill out all fields.");
+      toast.error("fill this form.");
       return;
     }
     try {
@@ -26,11 +27,12 @@ export default function Login() {
 
     const data = await res.json();
     if (res.ok) {
-      alert('Login successful');
-      navigate('/profile'); 
-    }// Redirect to profile page
+      toast.success('Login successful');
+      navigate('/profile');
+    } else {
+      toast.error(data.message || 'Login failed');
+    }
 
-      
     console.log(data); // token or error message
   } catch (err) {
     console.error('Login failed:', err);

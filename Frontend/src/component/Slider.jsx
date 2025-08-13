@@ -1,4 +1,5 @@
 import React from 'react';
+import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
@@ -11,7 +12,7 @@ function Slider() {
       await axios.post('http://localhost:3000/api/v1/auth/logout', {}, {
         withCredentials: true
       });
-      alert('Logged out successfully');
+      toast.success('Logged out successfully');
     } catch (error) {
       console.error('Logout failed:', error);
     } finally {

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import {toast} from 'react-toastify';
 
 const Update = () => {
   const [formData, setFormData] = useState({
@@ -51,10 +52,10 @@ const Update = () => {
 
       if (!res.ok) throw new Error(data.message || "Update failed");
       
-      alert('Profile updated successfully!');
+      toast.success('Profile updated successfully!');
       navigate('/profile');
     } catch (err) {
-      alert(err.message);
+      toast.error(err.message);
     } finally {
       setLoading(false);
     }

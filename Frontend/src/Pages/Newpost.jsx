@@ -1,4 +1,5 @@
 import React, { useState  } from 'react';
+import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 
 
@@ -36,18 +37,18 @@ function AddPost() {
 
       const data = await res.json();
       if (res.ok) {
-        alert('✅ Post uploaded successfully!');
+         toast.success('Post created successfully!');
         navigate('/profile'); // Redirect to profile or posts page
         setCaption('');
         setImage(null);
         setPreview(null);
       } else {
         console.error(data);
-        alert('❌ Upload failed!');
+        toast.error(data.message || 'Failed to create post');
       }
     } catch (err) {
       console.error('Error:', err);
-      alert('Something went wrong!');
+      toast.error('Something went wrong!');
     } finally {
       setLoading(false);
     }
