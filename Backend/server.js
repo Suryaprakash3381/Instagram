@@ -14,8 +14,6 @@ const app = express();
 
 const PORT = 3000;
 
-// Middleware
-import cors from 'cors';
 
 app.use(cors({
   origin: [
