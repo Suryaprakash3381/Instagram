@@ -15,10 +15,16 @@ const app = express();
 const PORT = 3000;
 
 // Middleware
+import cors from 'cors';
+
 app.use(cors({
-    origin: 'http://localhost:5173',
-    credentials: true
+  origin: [
+    'http://localhost:5173',               // local dev
+    'https://instagram-6wnf.onrender.com'  // deployed frontend
+  ],
+  credentials: true
 }));
+
 app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
