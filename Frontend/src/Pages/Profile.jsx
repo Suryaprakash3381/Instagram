@@ -8,76 +8,97 @@ import '../App.css';
 function Profile() {
   const [profile, setProfile] = useState(null);
   const [posts, setPosts] = useState([]);
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetch(`${import.meta.env.VITE_API_URL}/api/v1/auth/profile`, {
-      method: "GET",
-      credentials: "include",
-    })
-      .then((res) => {
-        if (!res.ok) throw new Error('Failed to fetch profile');
-        return res.json();
-      })
-      .then((data) => {
-        console.log('Profile data received:', data);
+    const fetchProfile = async () => {
+      try {
+        setLoading(true);
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/auth/profile`, {
+          method: "GET",
+          credentials: "include",
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+
+        if (!res.ok) {
+          throw new Error('Failed to fetch profile');
+        }
+
+        const data = await res.json();
+        console.log('Profile data:', data);
+        console.log('Image URLs:', data.posts?.map(post => post.imageUrl));
+
         setProfile(data);
         setPosts(data.posts || []);
-      })
-      .catch((err) => {
-        console.error('Error fetching profile:', err);
-        toast.error('Could not load profile');
-      });
-  }, []);
+      } catch (err) {
+        console.error('Profile fetch error:', err);
+        toast.error(err.message || 'Could not load profile');
+        if (err.message.includes('Unauthorized')) {
+          navigate('/login');
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const handleEditProfile = () => {
-    navigate('/update');
-  };
+    fetchProfile();
+  }, [navigate]);
 
-  const handleLogout = () => {
-    fetch(`${import.meta.env.VITE_API_URL}/api/v1/auth/logout`, {
-      method: "POST",
-      credentials: "include",
-    })
-      .then((res) => {
-        if (!res.ok) throw new Error('Logout failed');
-        return res.json();
-      })
-      .then(() => {
-        toast.success('Logged out successfully');
-        navigate('/login');
-      })
-      .catch((err) => {
-        console.error('Logout error:', err);
-        toast.error('Logout failed. Please try again.');
+  const handleEditProfile = () => navigate('/update');
+  const handleCreatePost = () => navigate('/createpost');
+
+  const handleLogout = async () => {
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/auth/logout`, {
+        method: "POST",
+        credentials: "include",
       });
+
+      if (!res.ok) throw new Error('Logout failed');
+      
+      toast.success('Logged out successfully');
+      navigate('/login');
+    } catch (err) {
+      console.error('Logout error:', err);
+      toast.error(err.message || 'Logout failed');
+    }
   };
 
   const handleDelete = async (postId) => {
     if (!window.confirm('Are you sure you want to delete this post?')) return;
 
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/post/delete-post/${postId}`, {
-        method: "DELETE",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-
-      const data = await res.json();
+      const res = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/v1/post/delete-post/${postId}`,
+        {
+          method: "DELETE",
+          credentials: "include",
+        }
+      );
 
       if (!res.ok) {
-        throw new Error(data.message || "Failed to delete post");
+        const errorData = await res.json();
+        throw new Error(errorData.message || "Delete failed");
       }
 
       setPosts(prev => prev.filter(post => post._id !== postId));
       toast.success('Post deleted successfully!');
     } catch (err) {
       console.error("Delete error:", err);
-      toast.error(`Delete failed: ${err.message}`);
+      toast.error(err.message || 'Delete failed');
     }
   };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-screen bg-black">
+        <div className="text-white text-2xl">Loading profile...</div>
+      </div>
+    );
+  }
 
   return (
     <div className='flex md:flex-row bg-black h-screen w-full overflow-hidden'>
@@ -92,17 +113,18 @@ function Profile() {
       </div>
 
       {/* Main Content */}
-      <div className='flex flex-col text-white w-full h-full overflow-hidden'>
+      <div className='flex flex-col text-white w-full h-full overflow-y-auto'>
         {/* Header */}
-        <div className='flex flex-col sm:flex-row sm:items-center gap-6 p-4 md:p-6 bg-black z-20'>
+        <div className='flex flex-col sm:flex-row sm:items-center gap-6 p-4 md:p-6 bg-black'>
           <img
             src="https://www.freeiconspng.com/thumbs/profile-icon-png/account-profile-user-icon--icon-search-engine-10.png"
             alt="Profile"
             className='w-24 h-24 rounded-full border-2 border-gray-500 mx-auto sm:mx-0'
           />
           <div className='text-center sm:text-left flex-1'>
-            <h1 className='text-2xl font-bold'>{profile?.fullname || "Loading..."}</h1>
-            <p className='text-gray-400 break-all'>@{profile?.username || "Username"}</p>
+            <h1 className='text-2xl font-bold'>{profile?.fullname || "User"}</h1>
+            <p className='text-gray-400 break-all'>@{profile?.username || "username"}</p>
+            <p className='text-gray-400'>{profile?.email || ""}</p>
             <div className='flex flex-wrap justify-center sm:justify-start gap-4 mt-4'>
               <button
                 className='px-4 py-2 bg-blue-600 rounded hover:bg-blue-700 transition'
@@ -112,64 +134,82 @@ function Profile() {
               </button>
               <button
                 className='px-4 py-2 bg-blue-600 rounded hover:bg-blue-700 transition'
-                onClick={() => navigate('/createpost')}
+                onClick={handleCreatePost}
               >
-                <i className="fas fa-plus mr-2"></i> New Posts
+                <i className="fas fa-plus mr-2"></i> New Post
               </button>
-              <div className='block md:hidden'>
-                <h1 className='text-2xl font-semibold mb-6'>
-                  <a href="/login" onClick={(e) => { e.preventDefault(); handleLogout(); }}>
-                    <i className="fas fa-right-from-bracket text-red-600 text-xl"></i> Logout
-                  </a>
-                </h1>
-              </div>
+              <button
+                className='px-4 py-2 bg-red-600 rounded hover:bg-red-700 transition block md:hidden'
+                onClick={handleLogout}
+              >
+                <i className="fas fa-right-from-bracket mr-2"></i> Logout
+              </button>
             </div>
           </div>
         </div>
 
         {/* Bio */}
-        <div className='p-4 md:p-6 bg-black'>
-          <h2 className='font-bold text-xl'>Bio</h2>
-          <p className='text-gray-400 text-md'>{profile?.bio || "This is a sample bio for the user."}</p>
+        <div className='p-4 md:p-6 bg-black border-b border-gray-800'>
+          <h2 className='font-bold text-xl mb-2'>Bio</h2>
+          <p className='text-gray-400 text-md'>
+            {profile?.bio || "No bio yet. Click 'Edit Profile' to add one."}
+          </p>
         </div>
 
         {/* Stats */}
-        <div className='flex justify-around text-center mb-4 px-4 md:px-6 flex-wrap gap-y-4 bg-black'>
-          <div>
+        <div className='flex justify-around text-center py-4 px-4 md:px-6 bg-black border-b border-gray-800'>
+          <div className='px-4'>
             <h2 className='text-xl font-bold'>{posts.length}</h2>
             <p className='text-gray-400'>Posts</p>
           </div>
-          <div>
+          <div className='px-4'>
             <h2 className='text-xl font-bold'>{profile?.followers?.length || 0}</h2>
             <p className='text-gray-400'>Followers</p>
           </div>
-          <div>
+          <div className='px-4'>
             <h2 className='text-xl font-bold'>{profile?.following?.length || 0}</h2>
             <p className='text-gray-400'>Following</p>
           </div>
         </div>
 
         {/* Posts Grid */}
-        <div className='flex-1 overflow-y-auto px-4 md:px-6 pb-24 hide-scrollbar'>
-          <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4'>
-            {posts.map((post) => (
-              <div key={post._id} className="relative group w-full h-64">
-                <img
-                  src={`${import.meta.env.VITE_API_URL}${post.imageUrl}`}
-                  alt={`Post ${post._id}`}
-                  className="w-full h-64 object-cover rounded-lg border border-gray-500 transition duration-300 group-hover:blur-sm"
-                />
-                <button
-                  onClick={() => handleDelete(post._id)}
-                  className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition duration-300 z-10"
-                >
-                  <div className="bg-black bg-opacity-60 p-4 rounded-full hover:bg-opacity-80">
-                    <i className="fa-solid fa-trash text-2xl text-white"></i>
+        <div className='flex-1 p-4 md:p-6 pb-24 md:pb-6'>
+          {posts.length === 0 ? (
+            <div className='flex flex-col items-center justify-center h-64'>
+              <p className='text-gray-400 text-lg mb-4'>No posts yet</p>
+              <button
+                className='px-4 py-2 bg-blue-600 rounded hover:bg-blue-700 transition'
+                onClick={handleCreatePost}
+              >
+                <i className="fas fa-plus mr-2"></i> Create Your First Post
+              </button>
+            </div>
+          ) : (
+            <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4'>
+              {posts.map((post) => (
+                <div key={post._id} className="relative group w-full aspect-square">
+                  <img
+                    src={`${import.meta.env.VITE_API_URL}${post.imageUrl}`}
+                    alt={`Post by ${profile?.username}`}
+                    className="w-full h-full object-cover rounded-lg border border-gray-700 transition duration-300 group-hover:opacity-50"
+                    onError={(e) => {
+                      e.target.onerror = null;
+                      e.target.src = 'https://via.placeholder.com/300?text=Image+Not+Found';
+                    }}
+                  />
+                  <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition duration-300">
+                    <button
+                      onClick={() => handleDelete(post._id)}
+                      className="bg-black bg-opacity-70 p-3 rounded-full hover:bg-opacity-90"
+                      title="Delete post"
+                    >
+                      <i className="fa-solid fa-trash text-red-500 text-xl"></i>
+                    </button>
                   </div>
-                </button>
-              </div>
-            ))}
-          </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>
