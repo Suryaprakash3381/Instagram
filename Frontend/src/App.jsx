@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import Login from './Pages/Login.jsx';
 import Profile from './Pages/Profile.jsx';
 import Register from './Pages/Register.jsx';
@@ -13,7 +13,6 @@ import './App.css';
 function App() {
   return (
     <Router>
-      {/* Toast container OUTSIDE routes */}
       <ToastContainer position="top-right" autoClose={3000} />
 
       <Routes>

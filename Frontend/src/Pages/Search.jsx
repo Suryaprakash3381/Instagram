@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import Slider from '../component/Slider.jsx';
+import Alternate from '../component/Alternate.jsx';
 
 function Search() {
   const [username, setUsername] = useState('');
@@ -34,46 +36,59 @@ function Search() {
   };
 
   return (
-    <div className='flex flex-col justify-center items-center bg-black h-screen text-white'>
-      <h1 className='text-2xl font-bold mb-4'>Search Your Friends</h1>
+    <div className="flex h-screen bg-black text-white overflow-hidden">
+      {/* Sidebar */}
+      <div className="hidden md:block md:w-1/4 h-full sticky top-0 border-r border-gray-800">
+        <Slider />
+      </div>
 
-      <div className='bg-gray-900 p-6 rounded-lg w-full max-w-md flex flex-col gap-4'>
-        <input
-          type='text'
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-          className='bg-transparent border border-white text-white placeholder-white px-3 py-2 rounded w-full'
-          placeholder='Enter username'
-          onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-        />
+      {/* Mobile Nav */}
+      <div className="block md:hidden fixed bottom-0 w-full z-10 bg-black border-t border-gray-800">
+        <Alternate />
+      </div>
 
-        <button
-          className='bg-green-500 rounded px-4 py-2 hover:bg-green-600 transition'
-          onClick={handleSearch}
-        >
-          Search
-        </button>
+      {/* Main Content */}
+      <div className="flex flex-col justify-center items-center flex-1 px-4 py-8 overflow-y-auto">
+        <h1 className="text-3xl font-bold mb-6 text-center">🔍 Search Your Friends</h1>
 
-        {error && <p className='text-red-500'>{error}</p>}
+        <div className="bg-gray-900 p-6 rounded-xl shadow-lg w-full max-w-md space-y-4 border border-gray-700">
+          <input
+            type="text"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+            placeholder="Enter username"
+            className="bg-transparent border border-white text-white placeholder-white px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+          />
 
-        {user && (
-          <div className='bg-gray-800 p-4 rounded mt-4'>
-            <h2 
-              className='font-bold text-lg cursor-pointer hover:text-blue-400'
-              onClick={() => handleProfileClick(user._id)}
-            >
-              {user.username}
-            </h2>
-            <p>Email: {user.email}</p>
-            {user.profilePicture && (
-              <img
-                src={`${import.meta.env.VITE_API_URL}${user.profilePicture}`}
-                alt='Profile'
-                className='w-24 h-24 rounded-full mt-2'
-              />
-            )}
-          </div>
-        )}
+          <button
+            onClick={handleSearch}
+            className="w-full bg-green-500 text-white py-2 rounded-lg hover:bg-green-600 transition font-semibold"
+          >
+            Search
+          </button>
+
+          {error && <p className="text-red-500 text-sm">{error}</p>}
+
+          {user && (
+            <div className="bg-gray-800 p-4 rounded-lg mt-4 border border-gray-700">
+              <h2
+                className="font-bold text-lg cursor-pointer hover:text-blue-400 transition"
+                onClick={() => handleProfileClick(user._id)}
+              >
+                @{user.username}
+              </h2>
+              <p className="text-gray-300 text-sm">Email: {user.email}</p>
+              {user.profilePicture && (
+                <img
+                  src={`${import.meta.env.VITE_API_URL}${user.profilePicture}`}
+                  alt="Profile"
+                  className="w-24 h-24 rounded-full mt-4 border border-gray-600 object-cover"
+                />
+              )}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

@@ -13,7 +13,7 @@ const Update = () => {
 
   // Fetch current profile data when component mounts
   useEffect(() => {
-    fetch(`${import.meta.env.VITE_API_URL}/api/v1/auth/profile`, {
+    fetch(`http://localhost:5173/api/v1/auth/profile`, {
       method: "GET",
       credentials: "include",
     })
@@ -39,7 +39,7 @@ const Update = () => {
     setLoading(true);
 
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/auth/update-profile`, {
+      const res = await fetch(`http://localhost:3000/api/v1/auth/update-profile`, {
         method: "PUT",
         credentials: "include",
         headers: {

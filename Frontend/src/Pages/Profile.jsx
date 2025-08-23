@@ -15,7 +15,7 @@ function Profile() {
     const fetchProfile = async () => {
       try {
         setLoading(true);
-        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/auth/profile`, {
+        const res = await fetch(`http://localhost:3000/api/v1/auth/profile`, {
           method: "GET",
           credentials: "include",
           headers: {
@@ -52,7 +52,7 @@ function Profile() {
 
   const handleLogout = async () => {
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/auth/logout`, {
+      const res = await fetch(`/api/v1/auth/logout`, {
         method: "POST",
         credentials: "include",
       });
@@ -72,7 +72,7 @@ function Profile() {
 
     try {
       const res = await fetch(
-        `${import.meta.env.VITE_API_URL}/api/v1/post/delete-post/${postId}`,
+        `http://localhost:3000/api/v1/post/delete-post/${postId}`,
         {
           method: "DELETE",
           credentials: "include",
@@ -189,7 +189,7 @@ function Profile() {
               {posts.map((post) => (
                 <div key={post._id} className="relative group w-full aspect-square">
                   <img
-                    src={`${import.meta.env.VITE_API_URL}${post.imageUrl}`}
+                    src={`http://localhost:3000${post.imageUrl}`}
                     alt={`Post by ${profile?.username}`}
                     className="w-full h-full object-cover rounded-lg border border-gray-700 transition duration-300 group-hover:opacity-50"
                     onError={(e) => {
