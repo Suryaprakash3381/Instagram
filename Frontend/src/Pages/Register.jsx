@@ -22,7 +22,7 @@ export default function Login() {
     }
     try {
       console.log('Sending registration request:', { email, password, username, fullname }); // Debug log
-      const res = await fetch(`http://localhost:3000/api/v1/auth/register`, {
+      const res = await fetch(`https://instagram-server-d6ds.onrender.com/api/v1/auth/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
