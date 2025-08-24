@@ -22,13 +22,11 @@ if (!fs.existsSync(uploadsDir)) {
 
 // Enhanced CORS configuration
 app.use(cors({
-  origin: [
-    'http://localhost:5173',
-    'https://instagram-6wnf.onrender.com'
-  ],
-  credentials: true,
-  exposedHeaders: ['Content-Disposition']
+  origin: ["https://instagram-frontend-x8ai.onrender.com"], // your frontend render URL
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  credentials: true
 }));
+
 
 app.use(cookieParser());
 app.use(express.json());
