@@ -8,7 +8,7 @@ const Post = require('../Model/post.model.js');
 const verifyToken = require('../middleware/authMiddleware.js');
 
 const Router = express.Router();
-
+console.log("Auth routes initialized");
 // ✅ REGISTER
 Router.post('/register', async (req, res) => {
   try {
