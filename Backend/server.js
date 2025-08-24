@@ -23,7 +23,7 @@ if (!fs.existsSync(uploadsDir)) {
 // Enhanced CORS configuration
 app.use(cors({
   origin: ["https://instagram-frontend-x8ai.onrender.com"], // your frontend render URL
-  methods: ["GET", "POST", "PUT", "DELETE"],
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   credentials: true
 }));
 
